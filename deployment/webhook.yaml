@@ -5,7 +5,7 @@ metadata:
   labels:
     app: internal-service-webhook
 webhooks:
-  - name: internal-service-webhook
+  - name: edu.mayo.dcis.internal-service-webhook
     clientConfig:
       service:
         name: internal-service-webhook-svc
