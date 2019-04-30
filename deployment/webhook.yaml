@@ -11,6 +11,7 @@ webhooks:
         name: internal-service-webhook-svc
         namespace: default
         path: "/mutate"
+      caBundle: ${CA_BUNDLE}
     rules:
       - operations: [ "CREATE" ]
         apiGroups: [""]
