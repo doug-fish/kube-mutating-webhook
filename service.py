@@ -11,7 +11,7 @@ def service():
 def mutate(path):
   print("entering /mutate")
   content=response.get_json()
-  print("
+  print(content)
   data=content
   response = app.response_class(
     response=json.dumps(data),
