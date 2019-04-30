@@ -5,4 +5,6 @@ RUN yum update -y && \
     yum install -y python36-pip 
 ADD *.py /
 ADD *.sh /
+ENV LC_ALL=en_US.utf8
+ENV LANG=en_US.utf8
 CMD /service.sh
