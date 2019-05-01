@@ -6,7 +6,7 @@ metadata:
   name: internal-service-webhook
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: internal-service-webhook
@@ -23,3 +23,28 @@ spec:
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+      - image: pbrumblay/tls-sidecar
+        imagePullPolicy: Always
+        name: tls-sidecar
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/nginx/ssl
+          name: secret
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: default-token
+          readOnly: true
+      volumes:
+      - name: secret
+        secret:
+          defaultMode: 420
+          secretName: hook-tls
+      - name: default-token
+        secret:
+          defaultMode: 420
+          secretName: default-token-prrxg
+
