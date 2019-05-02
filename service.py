@@ -26,7 +26,7 @@ def mutate():
   )
   print("mutate response:")
   print(response)
-  print("exiting /mutate")
+  print("exiting /mutate", flush=True)
   return response
 
 @app.route('/<path:path>', methods=['POST', 'GET'])
