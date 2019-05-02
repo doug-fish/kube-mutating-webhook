@@ -1,18 +1,16 @@
 from flask import Flask
+from flask import request
+import json
+
 app = Flask(__name__)
 
-@app.route('/services')
-@app.route('/services/')
-def service():
-  print("entering /services")
-  return "<div>Hi!</div>"
-
 @app.route('/mutate', methods=['POST'])
-def mutate(path):
+def mutate():
   print("entering /mutate")
-  content=response.get_json()
+  content=request.get_json()
   print(content)
   data=content
+  import pdb;pdb.set_trace()
   response = app.response_class(
     response=json.dumps(data),
     status=200,
@@ -23,7 +21,12 @@ def mutate(path):
   print("exiting /mutate")
   return response
 
-@app.route('/<path:path>')
+@app.route('/<path:path>', methods=['POST', 'GET'])
 def default(path):
   print("entering %s" % path)
-  return "<div>Oh?</div>"
+  response = app.response_class(
+    response=json.dumps({"error": "path not found"}),
+    status=404,
+    mimetype='application/json'
+  )
+  return response
