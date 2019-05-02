@@ -5,12 +5,16 @@ metadata:
   labels:
     app: internal-service-webhook
 webhooks:
-  - name: edu.mayo.dcis.internal-service-webhook
+  - name: internal-service-webhook-svc.dcis.mayo.edu
+    namespaceSelector: {}
     clientConfig:
-      url: https://internal-service-webhook-svc.default.svc.cluster.local/mutate
+      service:
+        name: internal-service-webhook-svc
+        namespace: default
+        path: "/mutate"
       caBundle: ${CA_BUNDLE}
     rules:
       - operations: [ "CREATE" ]
         apiGroups: [""]
         apiVersions: ["v1"]
-        resources: ["service"]
+        resources: ["services"]
