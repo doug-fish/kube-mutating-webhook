@@ -1,4 +1,4 @@
-openssl req -new -sha256 -key tls.key -out tls.csr -nodes -subj '/CN=internal-service-webhook-svc.default.svc.cluster.local'
+openssl req -new -sha256 -key tls.key -out tls.csr -nodes -subj '/CN=internal-service-webhook-svc.default.svc'
 echo "generated CSR:"
 openssl req -noout -text -in tls.csr
 echo "submitting to kube"
@@ -25,3 +25,4 @@ kubectl get csr  internal-service-webhook-svc.default -o jsonpath='{.status.cert
     | base64 --decode > tls.crt
 
 kubectl create secret tls hook-tls --cert=tls.crt --key=tls.key
+echo "don't forget to delete the pod to pick up this new secret!"
