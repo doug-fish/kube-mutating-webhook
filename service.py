@@ -10,7 +10,6 @@ def mutate():
   content=request.get_json()
   print(content)
   data=content
-  import pdb;pdb.set_trace()
   response = app.response_class(
     response=json.dumps(data),
     status=200,
