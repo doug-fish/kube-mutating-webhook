@@ -14,7 +14,7 @@ def mutate():
   annotation=annotations.get('service.beta.kubernetes.io/azure-load-balancer-internal', 'false')
   noAnnotation = not annotation.lower() == "true"
 
-  if type.lower == "loadbalancer" and noAnnotation:
+  if type.lower() == "loadbalancer" and noAnnotation:
     print("will update")
   else:
     print("no update needed")
