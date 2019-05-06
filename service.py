@@ -29,6 +29,13 @@ def mutate():
                              "path": "/metadata/annotations/service.beta.kubernetes.io\/azure-load-balancer-internal"})
     # add in a proper annotation
     patchOperations.append({"op": "add",
+                         "path": "/metadata/annotations",
+                         "value": {}})
+    
+    patchOperations.append({"op": "add",
+                         "path": "/metadata/annotations/test",
+                         "value": "success"})
+    patchOperations.append({"op": "add",
                          "path": "/metadata/annotations/service.beta.kubernetes.io\/azure-load-balancer-internal",
                          "value": "true"})
   else:
@@ -36,15 +43,19 @@ def mutate():
 
   #https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/admission/v1beta1/types_swagger_doc_generated.go
   responseJson = {
-    "uid": requestData.get("uid", 0),
+    "uid": requestData.get("request", {}).get("uid", 0),
     "allowed": "true",
     "status": "",
-    "patch": json.dumps(patchOperations), #RFC 6902 JSON Patch
+    "patch": patchOperations, #RFC 6902 JSON Patch
     "patchType": "JSONPatch"
   }
+  
+  responseJsonString = json.dumps(responseJson)
+  print("response body: %s" % responseJsonString)
+
   response = app.response_class(
   #https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/admission/v1beta1/types_swagger_doc_generated.go
-    response=json.dumps(responseJson),
+    response=responseJsonString,
     status=200,
     mimetype='application/json'
   )
