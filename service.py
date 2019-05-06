@@ -11,20 +11,40 @@ def mutate():
   print(requestData)
   type=requestData.get('request', {}).get('object', {}).get('spec', {}).get('type','')
   annotations=requestData.get('request', {}).get('object', {}).get('metadata', {}).get('annotations',{})
-  annotation=annotations.get('service.beta.kubernetes.io/azure-load-balancer-internal', 'false')
+  annotation=annotations.get('service.beta.kubernetes.io/azure-load-balancer-internal', '')
   noAnnotation = not annotation.lower() == "true"
   print ("type: %s" % type)
   print ("annotations: %s" % annotations)
   print ("noAnnotation: %s" % noAnnotation)
   print ("equal loadbalander?: %s" % type.lower() == "loadbalancer")
 
+  # array of json patch operations RFC 6902
+  patchOperations = []
+
   if type.lower() == "loadbalancer" and noAnnotation:
     print("will update")
+    # if an annotation exists, remove it
+    if annotation:
+        patchOperations.append({"op": "remove",
+                             "path": "/metadata/annotations/service.beta.kubernetes.io\/azure-load-balancer-internal"})
+    # add in a proper annotation
+    patchOperations.append({"op": "add",
+                         "path": "/metadata/annotations/service.beta.kubernetes.io\/azure-load-balancer-internal",
+                         "value": "true"})
   else:
     print("no update needed")
 
+  #https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/admission/v1beta1/types_swagger_doc_generated.go
+  responseJson = {
+    "uid": requestData.get("uid", 0),
+    "allowed": "true",
+    "status": "",
+    "patch": json.dumps(patchOperations), #RFC 6902 JSON Patch
+    "patchType": "JSONPatch"
+  }
   response = app.response_class(
-    response="hi",
+  #https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/admission/v1beta1/types_swagger_doc_generated.go
+    response=json.dumps(responseJson),
     status=200,
     mimetype='application/json'
   )
