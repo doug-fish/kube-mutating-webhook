@@ -9,10 +9,14 @@ def mutate():
   print("entering /mutate")
   requestData=request.get_json() or {}
   print(requestData)
-  type=requestData.get('object', {}).get('spec', {}).get('type','')
-  annotations=requestData.get('object', {}).get('metadata', {}).get('annotations',{})
+  type=requestData.get('request', {}).get('object', {}).get('spec', {}).get('type','')
+  annotations=requestData.get('request', {}).get('object', {}).get('metadata', {}).get('annotations',{})
   annotation=annotations.get('service.beta.kubernetes.io/azure-load-balancer-internal', 'false')
   noAnnotation = not annotation.lower() == "true"
+  print ("type: %s" % type)
+  print ("annotations: %s" % annotations)
+  print ("noAnnotation: %s" % noAnnotation)
+  print ("equal loadbalander?: %s" % type.lower() == "loadbalancer")
 
   if type.lower() == "loadbalancer" and noAnnotation:
     print("will update")
