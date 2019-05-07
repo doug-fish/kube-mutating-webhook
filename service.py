@@ -9,8 +9,10 @@ def mutate():
   print("entering /mutate")
   requestData=request.get_json() or {}
   print(requestData)
-  type=requestData.get('request', {}).get('object', {}).get('spec', {}).get('type','')
-  annotations=requestData.get('request', {}).get('object', {}).get('metadata', {}).get('annotations',{})
+  request_field=requestData.get('request', {})
+  object_field=request_field.get('object', {})
+  type=object_field.get('spec', {}).get('type','')
+  annotations=object_field.get('metadata', {}).get('annotations',{})
   annotation=annotations.get('service.beta.kubernetes.io/azure-load-balancer-internal', '')
   noAnnotation = not annotation.lower() == "true"
   print ("type: %s" % type)
@@ -30,11 +32,8 @@ def mutate():
     # add in a proper annotation
     patchOperations.append({"op": "add",
                          "path": "/metadata/annotations",
-                         "value": {}})
+                         "value": {"test": "succeeded"}})
     
-    patchOperations.append({"op": "add",
-                         "path": "/metadata/annotations/test",
-                         "value": "success"})
     patchOperations.append({"op": "add",
                          "path": "/metadata/annotations/service.beta.kubernetes.io\/azure-load-balancer-internal",
                          "value": "true"})
@@ -43,7 +42,7 @@ def mutate():
 
   #https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/api/admission/v1beta1/types_swagger_doc_generated.go
   responseJson = {
-    "uid": requestData.get("request", {}).get("uid", 0),
+    "uid": request_field.get("uid", 0),
     "allowed": "true",
     "status": "",
     "patch": patchOperations, #RFC 6902 JSON Patch
